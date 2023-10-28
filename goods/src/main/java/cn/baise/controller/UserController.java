@@ -29,10 +29,6 @@ import java.util.*;
 @RestController
 @RequestMapping("/baise")
 public class UserController {
-    //有效期一个小时
-    private static int time = 1000*60*60;
-    //加密加盐
-    private static String signature= "fsjdfkhkjsahfkjlkfsd";
     @Autowired
     private UserService service;
     @Autowired
@@ -63,21 +59,18 @@ public class UserController {
         //paging.getMap().get("name")获取前端传入的数据
 
         String student = (String) paging.getMap().get("input");
-
-        if (null == student ||  student.equals("")){
-            LambdaQueryWrapper<User> wrapper = lam.like(User::getStudent,student);
-            //分页
-            IPage<User> page = new Page<>(paging.getCurPage(),paging.getPageNum());
-            IPage<User> pa= service.page(page);
-            return pa;
-        }else {
-            LambdaQueryWrapper<User> wrapper = lam.like(User::getStudent,student);
+        String roleId = (String)paging.getMap().get("roleId");
+        System.out.println("这个是id"+roleId);
+        LambdaQueryWrapper<User> wrapper =
+                lam.like(student != null,User::getStudent, student)
+                .like(roleId != null,User::getRoleId,roleId);
             //分页
             IPage<User> page = new Page<>(paging.getCurPage(),paging.getPageNum());
 
             IPage<User> pa= service.page(page,wrapper);
+            System.out.println(pa);
             return pa;
-        }
+//        }
     }
     //id查询
     @GetMapping("/{id}")
@@ -105,7 +98,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/regAll/{id}")
+    @GetMapping("/regAll/{id}")//模糊查询权限表
     public List<Register> regAllMo(@PathVariable("id") String id){
         //模糊查询
         List<Register> list = registerService.lambdaQuery().like(Register::getRoleId,id).list();

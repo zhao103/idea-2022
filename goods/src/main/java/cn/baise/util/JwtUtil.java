@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class JwtUtil {
     //有效期一个小时
-    private static int time = 1000*60*60;
+    private static int time = 1000*60*30;
     //加密加盐
     private static String signature= "fsjdfkhkjsahfkjlkfsd";
     public static String createToken(){
